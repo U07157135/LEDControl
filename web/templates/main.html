@@ -1,0 +1,375 @@
+<!Document html>
+    <html>
+
+    <head>
+        <meta charset="utf-8">
+        <title>LED Control</title>
+        <style>
+            .button {border: none;color: white;padding: 18px 24px;text-align: center;text-decoration: none;display: inline-block; margin: 4px 4px;cursor: pointer;border-radius: 20px;font-size: 36px;}
+            .button_r {background-color: red;}
+            .button_g {background-color: green;}
+            .button_b {background-color: blue;}
+            .button_off {background-color: black; color: white; font-size: 18px; border: 1px solid; border-color: black;}
+            .button_on {background-color: white; color: black; font-size: 18px; border: 1px solid; border-color: black;}
+            .led_img {width: 150px;}
+            .warpper {width:506px;margin: 0 auto;}
+            .LED_title {width: 500px;text-align: center;}
+            .LED_title_text {font-size: 48px;font-weight:bold;font-family:"Calibri";}
+            .led_area {width: 500px;display: flex;justify-content: space-evenly;}
+            .control_area {width: 448px;border: 3px dashed;border-color: gray;text-align:center;border-radius: 20px;font-size: 28px;font-weight: bold;font-family:"Calibri";}
+            .rgb_area {width: 448px;height: 90px;display: flex;justify-content: space-evenly; /*平均分散*/margin-top: 10px;}
+            .off_on_area {margin-top: 20px;margin-bottom: 20px;height: 65px;}
+            .speed_text {margin-top: 5px;display:block;flex-wrap: nowrap;font-size: 20px;}
+            .speed_value {display:inline-block;width:50px}
+            .model_title {margin-top: 10px;font-size: 32px;}
+            .slider {width:300px; }
+            a {font-family:"Calibri";}
+        </style>
+
+        <script>
+
+            // rgb flag用來判斷led的模式
+            let r_btn_flag = false;
+            let g_btn_flag = false;
+            let b_btn_flag = false;
+            let shining_flag = false;
+            let breath_flag = false;
+
+            // rgb按鈕on的顏色
+            let r_btn_on_color = "rgb(255, 100, 100)"
+            let g_btn_on_color = "rgb(100, 128, 100)"
+            let b_btn_on_color = "rgb(100, 100, 255)"
+
+            // rgb按鈕off的顏色
+            let r_btn_off_color = "red"
+            let g_btn_off_color = "green"
+            let b_btn_off_color = "blue"
+
+            // led圖片的路徑
+            let r_led_src = "/static/LED_r.png";
+            let g_led_src = "/static/LED_g.png";
+            let b_led_src = "/static/LED_b.png";
+            let off_led_src = "/static/LED_o.png";
+
+            // 建立空的timeout物件
+            let shining_delay = null;
+            let breath_delay = null;
+
+            // 
+            let shining_delay_time = null;
+            let breath_delay_time = null;
+
+            var xmlhttp = new XMLHttpRequest();
+
+            function r_btn_onclick() {
+                if(shining_flag === true){shining_model_stop()} // 如果shining flag為true的話停止shining mod
+                if(breath_flag === true){breath_model_stop()} // 如果breath flag為true的話停止breath mod
+
+                // 判斷r_btn的模式
+                if (r_btn_flag === true){
+
+                    document.getElementById("r_btn").style.background = r_btn_off_color;
+                    document.getElementById("r_led").setAttribute("src",off_led_src);
+                    r_btn_flag = false;
+                    r_mod = 0;
+                }
+                else{
+                    document.getElementById("r_btn").style.background = r_btn_on_color;
+                    document.getElementById("r_led").setAttribute("src",r_led_src);
+                    r_btn_flag = true;
+                    r_mod = 1;
+                }
+                xmlhttp.open("GET","/R="+r_mod,true);
+                xmlhttp.send();
+            }
+
+            function g_btn_onclick() {
+                if(shining_flag === true){shining_model_stop()} // 如果shining flag為true的話停止shining mod
+                if(breath_flag=== true){breath_model_stop()} // 如果breath flag為true的話停止breath mod
+                if(g_btn_flag === true){
+                    document.getElementById("g_btn").style.background = g_btn_off_color;
+                    document.getElementById("g_led").setAttribute("src",off_led_src);
+                    g_btn_flag = false;
+                    g_mod = 0;
+                }
+                else{
+                    // green led off
+                    document.getElementById("g_btn").style.background = g_btn_on_color;
+                    document.getElementById("g_led").setAttribute("src",g_led_src);
+                    g_btn_flag = true;
+                    g_mod = 1;
+                }
+                xmlhttp.open("GET","/G="+g_mod,true);
+                xmlhttp.send();
+            }
+
+            function b_btn_onclick() {
+                if(shining_flag === true){shining_model_stop()} // 如果shining flag為true的話停止shining mod
+                if(breath_flag === true){breath_model_stop()} // 如果breath flag為true的話停止breath mod
+                if(b_btn_flag === true){
+                    document.getElementById("b_btn").style.background = b_btn_off_color;
+                    document.getElementById("b_led").setAttribute("src",off_led_src);
+                    b_btn_flag = false;
+                    b_mod = 0;
+                }
+                else{
+                    document.getElementById("b_btn").style.background = b_btn_on_color;
+                    document.getElementById("b_led").setAttribute("src",b_led_src);
+                    b_btn_flag = true;
+                    b_mod = 1;
+                }
+                xmlhttp.open("GET","/B="+b_mod,true);
+                xmlhttp.send();
+            }
+
+            function off_btn_onclick() {
+                if(shining_flag === true){shining_model_stop()} // 如果shining flag為true的話停止shining mod
+                if(breath_flag === true){breath_model_stop()} // 如果breath flag為true的話停止breath mod
+
+                // 設rgb_btn flag 為ture
+                r_btn_flag = false;
+                g_btn_flag = false;
+                b_btn_flag = false;
+
+                // 設rgb_btn的背景顏色
+                document.getElementById("r_btn").style.background = r_btn_off_color;
+                document.getElementById("g_btn").style.background = g_btn_off_color;
+                document.getElementById("b_btn").style.background = b_btn_off_color;
+
+                // 設rgb led圖片為rgb led圖片
+                document.getElementById("r_led").setAttribute("src",off_led_src);
+                document.getElementById("g_led").setAttribute("src",off_led_src);
+                document.getElementById("b_led").setAttribute("src",off_led_src);
+                xmlhttp.open("GET","/off",true);
+                xmlhttp.send();
+            }
+
+            function on_btn_onclick() {
+                if(shining_flag === true){shining_model_stop()} // 如果shining flag為true的話停止shining mod
+                if(breath_flag=== true){breath_model_stop()} // 如果breath flag為true的話停止breath mod
+
+                // 設rgb_btn flag 為ture
+                r_btn_flag = true;
+                g_btn_flag = true;
+                b_btn_flag = true;
+
+                // 設rgb_btn的背景顏色
+                document.getElementById("r_btn").style.background = r_btn_on_color;
+                document.getElementById("g_btn").style.background = g_btn_on_color;
+                document.getElementById("b_btn").style.background = b_btn_on_color;
+
+                // 設rgb led圖片為rgb led圖片
+                document.getElementById("r_led").setAttribute("src",r_led_src);
+                document.getElementById("g_led").setAttribute("src",g_led_src);
+                document.getElementById("b_led").setAttribute("src",b_led_src);
+                xmlhttp.open("GET","/on",true);
+                xmlhttp.send();
+            }
+
+            function shining_oninput(value) {
+                if(breath_flag=== true){breath_model_stop()}
+                document.getElementById("s_speed").textContent = value+"%";
+                shining_model_stop()
+                shining_model_resume(value)
+                console.log(value)
+                xmlhttp.open("GET","/shining="+value);
+                xmlhttp.send();
+            }
+
+            function breath_oninput(value) {
+                if(shining_flag === true){shining_model_stop()}
+                document.getElementById("b_speed").textContent = value+"%";
+                breath_model_resume(value)
+                xmlhttp.open("GET","/breath="+value);
+                xmlhttp.send();
+            }
+
+            async function shining_model() {
+                // 設一個timeout物件
+                shining_delay = (s) => {
+                    return new Promise(function(resolve){  // 回傳一個 promise
+                      setTimeout(resolve,s);               // 等待多少秒之後 resolve()
+                    });
+                };             
+                while (true){
+                    if(shining_flag===true){
+                        // 全暗
+                        // 設rgb led圖片為off圖片
+                        document.getElementById("r_led").setAttribute("src",off_led_src);
+                        document.getElementById("g_led").setAttribute("src",off_led_src);
+                        document.getElementById("b_led").setAttribute("src",off_led_src);
+
+                        // delay time
+                        await shining_delay(shining_delay_time);
+
+                        // 全亮
+                        // 設rgb led圖片為rgb led圖片
+                        document.getElementById("r_led").setAttribute("src",r_led_src);
+                        document.getElementById("g_led").setAttribute("src",g_led_src);
+                        document.getElementById("b_led").setAttribute("src",b_led_src);
+
+                        // delay time
+                        await shining_delay(shining_delay_time);
+                    }
+                    else{
+                        await shining_delay(500);
+                    }
+                        
+                }
+            }
+
+            function shining_model_stop(){
+                // 設其他falg為false
+                shining_flag = false;
+                r_btn_flag = false;
+                g_btn_flag = false;
+                b_btn_flag = false;
+
+                // 設led btn為off
+                document.getElementById("r_btn").style.background = r_btn_off_color;
+                document.getElementById("g_btn").style.background = g_btn_off_color;
+                document.getElementById("b_btn").style.background = b_btn_off_color;
+
+                // 設led圖片為off_led圖片
+                document.getElementById("r_led").setAttribute("src",off_led_src);
+                document.getElementById("g_led").setAttribute("src",off_led_src);
+                document.getElementById("b_led").setAttribute("src",off_led_src);
+
+                // 清除timeout
+                clearTimeout(shining_delay)
+            }
+
+            function shining_model_resume(value){
+                shining_flag = true;
+                shining_delay_time = 10/(value+1)*1000;
+            }
+
+
+            async function breath_model() {
+                // 設一個timeout物件
+                breath_delay = (s) => {
+                    return new Promise(function(resolve){  // 回傳一個 promise
+                      setTimeout(resolve,s);               // 等待多少秒之後 resolve()
+                    });
+                };             
+                while (true){
+                    if(breath_flag===true){
+                        // 設led btn為off
+                        document.getElementById("r_btn").style.background = r_btn_off_color;
+                        document.getElementById("g_btn").style.background = g_btn_off_color;
+                        document.getElementById("b_btn").style.background = b_btn_off_color;
+
+                        // led全亮
+                        document.getElementById("r_led").setAttribute("src",r_led_src);
+                        document.getElementById("g_led").setAttribute("src",g_led_src);
+                        document.getElementById("b_led").setAttribute("src",b_led_src);
+                        // led背景漸亮
+                        for (var i=0;i<40;i += 2){
+                            if(breath_flag===false){break;} // 當 breath_flagflag 為否的時候跳出迴圈
+                            //設led圖片背景顏色
+                            document.getElementById("r_led").style.background = `radial-gradient(circle at center,red ${i}%, rgb(255, 255, 255) 70%)`;
+                            document.getElementById("g_led").style.background = `radial-gradient(circle at center,green ${i}%, rgb(255, 255, 255) 70%)`;
+                            document.getElementById("b_led").style.background = `radial-gradient(circle at center,blue ${i}%, rgb(255, 255, 255) 70%)`;
+                            await breath_delay(100); // delay 100ms
+                        }
+                        // led背景漸暗
+                        for (var i=40;i>-1;i -= 2){
+                            if(breath_flag===false){break;} // 當 breath_flagflag 為否的時候跳出迴圈
+                            //設led圖片背景顏色
+                            document.getElementById("r_led").style.background = `radial-gradient(circle at center,red ${i}%, rgb(255, 255, 255) 70%)`;
+                            document.getElementById("g_led").style.background = `radial-gradient(circle at center,green ${i}%, rgb(255, 255, 255) 70%)`;
+                            document.getElementById("b_led").style.background = `radial-gradient(circle at center,blue ${i}%, rgb(255, 255, 255) 70%)`;
+                            await breath_delay(100); // delay 100ms
+                        }         
+                    }
+                    else{
+                        // 當沒有啟動breath模式時delay 500ms
+                        await breath_delay(500);
+                    }
+                }
+            }
+
+            function breath_model_stop(){
+                
+                // 設定flag
+                breath_flag= false;
+                r_btn_flag = false;
+                g_btn_flag = false;
+                b_btn_flag = false;
+
+                // 設led圖片背景為白色
+                document.getElementById("r_led").style.background = "white";
+                document.getElementById("g_led").style.background = "white";
+                document.getElementById("b_led").style.background = "white";
+
+                // 設led圖片為off_led圖片
+                document.getElementById("r_led").setAttribute("src",off_led_src);
+                document.getElementById("g_led").setAttribute("src",off_led_src);
+                document.getElementById("b_led").setAttribute("src",off_led_src);
+
+                clearTimeout(breath_delay)
+            }
+
+            function breath_model_resume(value){
+                breath_flag= true;
+                breath_delay_time = 10/(value+1)*1000;
+                console.log(breath_delay_time)
+            }
+        </script>
+    </head>
+
+    <body>
+        <div class="warpper">
+            <div class="LED_title">
+                <a class="LED_title_text">LED Control</a>
+            </div>
+            <div class="led_area">
+                <img id="r_led" src="/static/LED_o.png" class="led_img" >
+                <img id="g_led" src="/static/LED_o.png" class="led_img">
+                <img id="b_led" src="/static/LED_o.png" class="led_img">
+            </div>
+            <div>
+                <fieldset class="control_area">
+                    <legend>Control Modle</legend>
+                    <div class="rgb_area">
+                        <div>
+                            <a id="r_btn" class="button button_r" onclick="r_btn_onclick()">R</a>
+                        </div>
+                        <div>
+                            <a id="g_btn" class="button button_g" onclick="g_btn_onclick()">G</a>
+                        </div>
+                        <div>
+                            <a id="b_btn" class="button button_b" onclick="b_btn_onclick()">B</a>
+                        </div>
+                    </div>
+                    <div class="model_title">
+                        <a class="shining_title" >Shining</a>
+                        <div class="speed_text">
+                            <a >Speed</a>
+                            <input type="range" min="0" max="100" step="1" value="0" class="slider" oninput="shining_oninput(this.value)">
+                            <a id="s_speed" class="speed_value">0%</a>
+                        </div>
+                        
+                    </div>
+                    <div class="model_title">
+                        <a class="">Breath</a>
+                        <div class="speed_text">
+                            <a >Speed</a>
+                            <input type="range" min="0" max="100" step="1" value="0" class="slider" oninput="breath_oninput(this.value)">
+                            <a id="b_speed" class="speed_value">0%</a>
+                        </div>
+                        
+                    </div>
+                    <div class="off_on_area">
+                        <a class="button button_off" onclick="off_btn_onclick()">OFF</a>
+                        <a class="button button_on" onclick="on_btn_onclick()">ON</a>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <script>
+            shining_model()
+            breath_model()
+        </script>
+    </body>
+    </html>

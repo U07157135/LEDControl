@@ -29,3 +29,5 @@ sudo python main.py
 * 燈條的紅色LED不知道為什麼一直亮著
 
 ## 心路歷程
+
+人生好難

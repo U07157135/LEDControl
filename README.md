@@ -1,4 +1,4 @@
-# RPI_LED_CONTROL
+# LEDControl
 
 ## 設備
 * Raspberry Pi 3

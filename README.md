@@ -24,14 +24,9 @@ cd RPI_LED_CONTROL/web
 sudo python main.py
 ```
 ## 網路設定
-把host改成本地端ip4的位置之後同個網段下都可以透過https://host:port/\"來連線
+把host改成本地端ip4的位置之後同個網段下都可以透過```https://host:port```來連線
 ![](https://i.imgur.com/OgmW9ec.png)
 
-
-## 問題
+## 還沒解決的問題
 * 閃爍模式和呼吸模式還沒跟樹梅派的燈光進行同步。
 * 燈條的紅色LED不知道為什麼一直亮著
-
-## 心路歷程
-
-人生好難
